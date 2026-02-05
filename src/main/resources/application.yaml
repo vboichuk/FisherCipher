@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: fisher-crypto
+  web:
+    resources:
+      static-locations: classpath:/static/
+  mvc:
+    static-path-pattern: /**
+
+fisher-cipher:
+  imageWidth: 800
+  imageHeight: 400
+  lineHeight: 50
+  marginX: 30
+  marginY: 30
+  compassSpacing: 30
+  letterSpacingFactor: 0.2
+  leading: 1.5
+  lettersFilePath: "letters.json"
+  isDebugDrawBox: true
+
+logging:
+  level:
+    com.home: DEBUG
+
+server:
+  port: 8080

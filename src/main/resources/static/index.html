@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Fisher Cipher</title>
+    <style>
+        div {text-align: center;}
+        /* стили */
+        #message {
+            width: 90vw; /* 90% от ширины окна просмотра */
+            max-width: 800px; /* максимальная ширина */
+            height: 150px; /* фиксированная высота */
+            min-height: 150px; /* минимальная высота */
+            
+            font-size: 32px; /* размер шрифта */
+            font-family: Arial, sans-serif; /* шрифт */
+            padding: 15px; /* внутренние отступы */
+            margin: 10px auto; /*  центрирование */
+            display: block; /* блочное отображение */
+            border: 1px solid #4CAF50; /* рамка */
+            border-radius: 8px; /* скругленные углы */
+            resize: vertical; /* разрешить изменение размера только по вертикали */
+        }
+
+        #button {
+            font-size: 30px;
+            padding: 10px 20px;
+            margin: 20px auto; /*  центрирование */
+            display: block; /* блочное отображение */
+        }
+
+        #select {
+            font-size: 24px;
+            padding: 8px;
+        }
+
+        .controls {
+            width: 90vw; /* 90% от ширины окна просмотра */
+            max-width: 800px; /* максимальная ширина */
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            margin: 10px auto; /*  центрирование */
+        }
+
+        #result {
+            width: 90vw; /* 90% от ширины окна просмотра */
+            max-width: 800px; /* максимальная ширина */
+            height: 150px; /* фиксированная высота */
+            min-height: 150px; /* минимальная высота */
+            padding: 15px; /* внутренние отступы */
+            margin: 10px auto; /*  центрирование */
+            display: block; /* блочное отображение */
+        }
+
+
+    </style>
+</head>
+<body>
+<textarea id="message" placeholder="Введите текст для шифрования"></textarea>
+<div class="controls">
+
+    <label for="key">Направление:</label><select id="key">
+        <option value="NE">Северо-Восток</option>
+        <option value="NW">Северо-Запад</option>
+        <option value="SW">Юго-Запад</option>
+        <option value="SE">Юго-Восток</option>
+        <option value="NONE" selected>None</option>
+    </select>
+
+    <label for="line_height">Высота строки</label> <textarea id="line_height">60</textarea>
+    <label for="width">Ширина листа</label> <textarea id="width">1000</textarea>
+
+</div>
+
+<div>
+    <button onclick="generate()">Генерировать</button>
+</div>
+<div id="result">
+
+</div>
+
+<script>
+    async function generate() {
+        const message = document.getElementById('message').value;
+        const key = document.getElementById('key').value;
+        const lineHeight = document.getElementById('line_height').value;
+        const width = document.getElementById('width').value;
+
+        const response = await fetch('/generate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message, key, lineHeight, width})
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            document.getElementById('result').innerHTML =
+                `<img src="${url}" style="max-width: 100%">`;
+        }
+    }
+</script>
+</body>
+</html>
