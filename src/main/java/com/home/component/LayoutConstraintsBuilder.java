@@ -20,7 +20,6 @@ public class LayoutConstraintsBuilder {
 
         return LayoutConstraints.builder()
                 .imageWidth(Optional.ofNullable(dto.getWidth()).orElse(properties.imageWidth()))
-                // .imageHeight(properties.imageHeight())
                 .marginX(properties.marginX())
                 .marginY(properties.marginY())
                 .letterSpacing(letterSpacing)

@@ -9,7 +9,6 @@ spring:
 
 fisher-cipher:
   imageWidth: 800
-  imageHeight: 400
   lineHeight: 50
   marginX: 30
   marginY: 60

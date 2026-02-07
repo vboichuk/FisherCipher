@@ -1,7 +1,6 @@
 package com.home.component;
 
 import com.home.model.BoundingBox;
-import com.home.model.Direction;
 import com.home.model.LayoutConstraints;
 import com.home.config.RenderConfig;
 import org.springframework.stereotype.Component;
@@ -13,20 +12,7 @@ import java.awt.geom.AffineTransform;
 public class CompassRendererImpl implements CompassRenderer {
 
     @Override
-    public void renderIfNeeded(Graphics2D g, int height, LayoutConstraints constraints, RenderConfig renderConfig) {
-
-        if (renderConfig.getKeyDirection() == Direction.NONE)
-            return;
-
-        // System.out.println("constraints.getCompassWidth() = " + constraints.getCompassWidth());
-        // System.out.println("constraints.getLineHeight() = " + constraints.getLineHeight());
-
-        BoundingBox box = new BoundingBox(
-                constraints.getCompassX(),
-                //
-                height,
-                constraints.getCompassWidth(),
-                constraints.getLineHeight());
+    public void render(Graphics2D g, BoundingBox box, LayoutConstraints constraints, RenderConfig renderConfig) {
 
         if (renderConfig.isDebugDrawBox())
             drawRect(g, box);

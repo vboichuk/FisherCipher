@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -24,24 +26,23 @@ public class FisherCipherService {
     private final ImageWriter imageWriter;
 
     public ImageData generate(RequestDto requestDto) {
-        Map<String, Letter> letterMap = letterLoader.loadLetters();
         LayoutConstraints constraints = layoutConstraintsBuilder.build(requestDto);
+        Map<String, Letter> letterMap = letterLoader.loadLetters();
         List<PositionedLetter> positionedLetters = layoutEngine.layout(requestDto.getMessage(), constraints, letterMap);
 
-        BufferedImage image = createImage(positionedLetters, constraints);
-        Graphics2D g2d = image.createGraphics();
         RenderConfig renderConfig = createRenderConfig(requestDto.getKey());
+
+        Dimension imageSize = constraints.calculateFinalImageSize(positionedLetters);
+        BufferedImage image = createImage(imageSize);
+        Graphics2D g2d = image.createGraphics();
 
         try {
             renderBackground(g2d, image);
-            if (!positionedLetters.isEmpty()) {
-                positionedLetters.forEach(pl ->
-                        renderLetter(g2d, pl, letterMap.get(pl.getCharacter()), renderConfig));
+            positionedLetters.forEach(pl ->
+                    renderLetter(g2d, pl, letterMap.get(pl.getCharacter()), renderConfig));
 
-                int compasPosY = image.getHeight() - constraints.getMarginY() - constraints.getLineHeight();
-                compassRenderer.renderIfNeeded(g2d, compasPosY, constraints, renderConfig);
-            }
-
+            Optional<BoundingBox> box = constraints.getCompassPosition(positionedLetters);
+            box.ifPresent(b -> compassRenderer.render(g2d, b, constraints, renderConfig));
         } finally {
             g2d.dispose();
         }
@@ -77,21 +78,11 @@ public class FisherCipherService {
         );
     }
 
-    private BufferedImage createImage(List<PositionedLetter> positionedLetters, LayoutConstraints constraints) {
-        int imageHeight = calculateImageHeight(positionedLetters, constraints);
+    private BufferedImage createImage(Dimension dimension) {
         return new BufferedImage(
-                constraints.getImageWidth(),
-                imageHeight,
+                dimension.width,
+                dimension.height,
                 BufferedImage.TYPE_INT_RGB);
-    }
-
-    private static int calculateImageHeight(List<PositionedLetter> positionedLetters, LayoutConstraints constraints) {
-        if (positionedLetters.isEmpty())
-            return constraints.getImageHeight(0);
-
-        int textLinesCount = 1 + positionedLetters.get(positionedLetters.size()-1).getLineNumber();
-        int compasLinesCount = constraints.getKeyDirection() == Direction.NONE ? 0 : 1;
-        return constraints.getImageHeight(textLinesCount + compasLinesCount);
     }
 
     private void renderBackground(Graphics2D g2d, BufferedImage image) {

@@ -3,6 +3,10 @@ package com.home.model;
 import lombok.Builder;
 import lombok.Data;
 
+import java.awt.*;
+import java.util.List;
+import java.util.Optional;
+
 @Data
 @Builder
 public class LayoutConstraints {
@@ -15,10 +19,6 @@ public class LayoutConstraints {
     private Direction keyDirection;
     private int compassWidth;
 
-    public int getCompassX() {
-        return imageWidth - marginX - compassWidth;
-    }
-
     public boolean checkFit(int x, int width) {
         return x + width < imageWidth - marginX;
     }
@@ -28,5 +28,44 @@ public class LayoutConstraints {
                 + lineHeight * linesCount * leading
                 - (leading-1) * lineHeight
         );
+    }
+
+    public Dimension calculateFinalImageSize(List<PositionedLetter> positionedLetters) {
+        int linesCount = getTextLinesCount(positionedLetters);
+        if (isShouldRenderCompass(positionedLetters)) {
+            linesCount++;
+        }
+
+        return new Dimension(imageWidth, getImageHeight(linesCount));
+    }
+
+    public boolean isShouldRenderCompass(List<PositionedLetter> positionedLetters) {
+        return !positionedLetters.isEmpty() && keyDirection != Direction.NONE;
+    }
+
+    public Optional<BoundingBox> getCompassPosition(List<PositionedLetter> positionedLetters) {
+        if (!isShouldRenderCompass(positionedLetters))
+            return Optional.empty();
+
+        int textLines = getTextLinesCount(positionedLetters);
+
+        Point position = new Point(
+                imageWidth - marginX - compassWidth,
+                (int) (marginY + textLines * lineHeight * (leading))
+        );
+        BoundingBox boundingBox = new BoundingBox(
+                position.x,
+                position.y,
+                compassWidth,
+                lineHeight);
+
+        return Optional.of(boundingBox);
+    }
+
+    private int getTextLinesCount(List<PositionedLetter> positionedLetters) {
+        if (positionedLetters == null || positionedLetters.isEmpty())
+            return 0;
+
+        return positionedLetters.get(positionedLetters.size()-1).getLineNumber() + 1;
     }
 }
