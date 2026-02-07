@@ -16,11 +16,11 @@ public class LayoutConstraintsBuilder {
 
     public LayoutConstraints build(RequestDto dto) {
 
-        double letterSpacing = properties.letterSpacingFactor() * properties.lineHeight();
+        int letterSpacing = (int) (properties.letterSpacingFactor() * properties.lineHeight());
 
         return LayoutConstraints.builder()
                 .imageWidth(Optional.ofNullable(dto.getWidth()).orElse(properties.imageWidth()))
-                .imageHeight(properties.imageHeight())
+                // .imageHeight(properties.imageHeight())
                 .marginX(properties.marginX())
                 .marginY(properties.marginY())
                 .letterSpacing(letterSpacing)

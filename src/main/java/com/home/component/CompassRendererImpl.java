@@ -13,17 +13,18 @@ import java.awt.geom.AffineTransform;
 public class CompassRendererImpl implements CompassRenderer {
 
     @Override
-    public void renderIfNeeded(Graphics2D g, LayoutConstraints constraints, RenderConfig renderConfig) {
+    public void renderIfNeeded(Graphics2D g, int height, LayoutConstraints constraints, RenderConfig renderConfig) {
 
         if (renderConfig.getKeyDirection() == Direction.NONE)
             return;
 
-        System.out.println("constraints.getCompassWidth() = " + constraints.getCompassWidth());
-        System.out.println("constraints.getLineHeight() = " + constraints.getLineHeight());
+        // System.out.println("constraints.getCompassWidth() = " + constraints.getCompassWidth());
+        // System.out.println("constraints.getLineHeight() = " + constraints.getLineHeight());
 
         BoundingBox box = new BoundingBox(
                 constraints.getCompassX(),
-                constraints.getImageHeight() - constraints.getMarginY() - constraints.getLineHeight(),
+                //
+                height,
                 constraints.getCompassWidth(),
                 constraints.getLineHeight());
 

@@ -8,4 +8,5 @@ import lombok.Data;
 public class PositionedLetter {
     String character;
     BoundingBox boundingBox;
+    int lineNumber;
 }

@@ -7,20 +7,26 @@ import lombok.Data;
 @Builder
 public class LayoutConstraints {
     private int imageWidth;
-    private int imageHeight;
     private int marginX;
     private int marginY;
-    private double letterSpacing;
+    private int letterSpacing;
     private double leading;
     private int lineHeight;
     private Direction keyDirection;
     private int compassWidth;
 
-    public int maxWidth() {
-        return imageWidth - marginX; // - compassWidth;
-    }
-
     public int getCompassX() {
         return imageWidth - marginX - compassWidth;
+    }
+
+    public boolean checkFit(int x, int width) {
+        return x + width < imageWidth - marginX;
+    }
+
+    public int getImageHeight(int linesCount) {
+        return (int) (2 * marginY
+                + lineHeight * linesCount * leading
+                - (leading-1) * lineHeight
+        );
     }
 }

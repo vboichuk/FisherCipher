@@ -19,51 +19,97 @@ public class TextLayoutEngineImpl implements TextLayoutEngine {
     public List<PositionedLetter> layout(String text,
                                          LayoutConstraints constraints,
                                          Map<String, Letter> letters) {
+        if (text == null || text.isBlank()) {
+            return List.of();
+        }
+
         List<PositionedLetter> result = new ArrayList<>();
-        int currentX = constraints.getMarginX();
-        int currentY = constraints.getMarginY();
-        int lineHeight = constraints.getLineHeight();
-        // int lineNumber = 0;
 
         String normalizedText = text.toUpperCase();
 
+        LayoutContext layoutContext = new LayoutContext(constraints);
+
         for (int i = 0; i < normalizedText.length(); i++) {
-            char ch = normalizedText.charAt(i);
-
-            int charWidth;
-            String character = String.valueOf(ch);
-            Letter letter = letters.get(character);
-            if (letter != null) {
-                charWidth = (int) (letter.getScaleX() * lineHeight);
-            }
-            else {
-                charWidth = (int) (UNDEFINED_CHAR_W * lineHeight);
-            }
-
-            // Проверяем, помещается ли символ в текущую строку
-            if (currentX + charWidth > constraints.maxWidth()) {
-                if (character.isBlank()) {
-                    continue;
-                }
-                currentX = constraints.getMarginX();
-                currentY += (int) (lineHeight * constraints.getLeading());
-            }
-
-            // Создаем positioned letter
-            PositionedLetter positionedLetter = PositionedLetter.builder()
-                    .character(character)
-                    .boundingBox(new BoundingBox(
-                            currentX, currentY, charWidth, lineHeight))
-                    // .lineNumber(lineNumber)
-                    // .positionInLine(i)
-                    .build();
-
-            result.add(positionedLetter);
-
-            // Сдвигаем позицию для следующего символа
-            currentX += (int) (charWidth + constraints.getLetterSpacing());
+            char character = normalizedText.charAt(i);
+            processCharacter(character, letters, constraints, result, layoutContext);
         }
 
         return result;
+    }
+
+    private void processCharacter(char character, Map<String, Letter> letters, LayoutConstraints constraints, List<PositionedLetter> result, LayoutContext layoutContext) {
+        String charStr = String.valueOf(character);
+
+        if (charStr.equals("\n")) {
+            processNewlineCharacter(layoutContext);
+        } else if (charStr.equals(" ")) {
+            processSpaceCharacter(layoutContext, constraints);
+        } else {
+            processRegularCharacter(charStr, layoutContext, letters, constraints, result);
+        }
+    }
+
+    private void processSpaceCharacter(LayoutContext context, LayoutConstraints constraints) {
+        int charWidth = getCharWidth(" ", null, constraints.getLineHeight());
+        if (constraints.checkFit(context.x, charWidth)) {
+            context.moveCursor(charWidth);
+        } else {
+            context.nextLine();
+        }
+    }
+
+    private void processRegularCharacter(String charStr, LayoutContext context, Map<String, Letter> letterMap, LayoutConstraints constraints, List<PositionedLetter> result) {
+        int charWidth = getCharWidth(charStr, letterMap.get(charStr), constraints.getLineHeight());
+
+        if (!constraints.checkFit(context.x, charWidth)) {
+            context.nextLine();
+        }
+
+        PositionedLetter positionedLetter = PositionedLetter.builder()
+                .character(charStr)
+                .boundingBox(new BoundingBox(context.x, context.y, charWidth, constraints.getLineHeight()))
+                .lineNumber(context.lineNum)
+                .build();
+
+        result.add(positionedLetter);
+        context.moveCursor(charWidth);
+    }
+
+    private void processNewlineCharacter(LayoutContext context) {
+        context.nextLine();
+    }
+
+    private static int getCharWidth(String s, Letter letter, int lineHeight) {
+        if (s.equals("\n"))
+            return 0;
+
+        if (letter != null)
+            return (int) (letter.getScaleX() * lineHeight);
+
+        return (int) (UNDEFINED_CHAR_W * lineHeight);
+    }
+
+    private static class LayoutContext {
+        private final LayoutConstraints constraints;
+        int x;
+        int y;
+        int lineNum;
+
+        LayoutContext (LayoutConstraints constraints) {
+            this.constraints = constraints;
+            x = constraints.getMarginX();
+            y = constraints.getMarginY();
+            lineNum = 0;
+        }
+
+        public void nextLine() {
+            x = constraints.getMarginX();
+            y += (int) (constraints.getLineHeight() * constraints.getLeading());
+            lineNum++;
+        }
+
+        public void moveCursor(int charWidth) {
+            x += charWidth + constraints.getLetterSpacing();
+        }
     }
 }
