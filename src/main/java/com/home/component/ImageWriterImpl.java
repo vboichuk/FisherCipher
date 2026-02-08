@@ -6,19 +6,16 @@ import org.springframework.stereotype.Component;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 
 
 @Component
 public class ImageWriterImpl implements ImageWriter {
 
     @Override
-    public ImageData write(BufferedImage image, String filename) {
-
+    public ImageData write(BufferedImage image) {
         try {
             byte[] pngBytes = convertToByteArray(image, "PNG");
-            ImageIO.write(image, "PNG", new File(filename));
-
+            // ImageIO.write(image, "PNG", new File(filename));
             return ImageData.builder()
                     .format("PNG")
                     .width(image.getWidth())

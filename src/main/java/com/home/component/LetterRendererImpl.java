@@ -10,9 +10,8 @@ import java.awt.geom.AffineTransform;
 @Component
 public class LetterRendererImpl implements LetterRenderer {
 
-    private static final double SQRT2 = 1.4142;
-    private static final double h = 0.333333;
-    private static final double D = SQRT2 * h;
+    public static final double H = 0.333333;  // Отношение
+    public static final double D = Math.sqrt(2) * H;
 
     @Override
     public void renderLetter(Graphics2D g, PositionedLetter pl, Letter letter, RenderConfig renderConfig) {
@@ -43,23 +42,23 @@ public class LetterRendererImpl implements LetterRenderer {
         Point end = calculateEnd(line, height);
 
         if (renderConfig.getKeyDirection() == line.getAngle()) {
-            drawDot(g, start);
+            drawDot(g, start, renderConfig);
         } else if (renderConfig.getKeyDirection() == line.getAngle().getOpposite()) {
-            drawDot(g, end);
+            drawDot(g, end, renderConfig);
         } else {
             drawLine(g, start, end, renderConfig);
         }
     }
 
     private static void drawLine(Graphics2D g, Point start, Point end, RenderConfig renderConfig) {
-        g.setColor(Color.BLACK);
+        g.setColor(renderConfig.getLineColor());
         g.setStroke(new BasicStroke(renderConfig.getStroke()));
         g.drawLine(start.x, start.y, end.x, end.y);
     }
 
-    private static void drawDot(Graphics2D g, Point start) {
-        int r = 5;
-        g.setColor(Color.BLACK);
+    private static void drawDot(Graphics2D g, Point start, RenderConfig renderConfig) {
+        int r = renderConfig.getDotRadius();
+        g.setColor(renderConfig.getDotColor());
         g.fillOval(start.x - r, start.y - r, r * 2, r * 2);
     }
 
@@ -79,14 +78,9 @@ public class LetterRendererImpl implements LetterRenderer {
 
     private static double getLengthDouble(Direction angle) {
         return switch (angle) {
-//            case 0 -> h;
-//            case 1, 3 -> D;
-//            case 2 -> 1 - h;
-//            case 6 -> 1;
-//            default -> 0;
-            case E -> h;
+            case E -> H;
             case NE, SE, NW, SW -> D;
-            case N -> 1-h;
+            case N -> 1 - H;
             case W -> 0.0;
             case S -> 1;
             default -> throw new IllegalStateException("Unexpected value: " + angle);

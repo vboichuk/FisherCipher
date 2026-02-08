@@ -47,7 +47,7 @@ public class FisherCipherService {
             g2d.dispose();
         }
 
-        return imageWriter.write(image, "test.png");
+        return imageWriter.write(image);
     }
 
     private RenderConfig createRenderConfig(Direction direction) {
