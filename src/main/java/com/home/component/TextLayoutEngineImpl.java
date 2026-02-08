@@ -1,11 +1,11 @@
 package com.home.component;
 
-import com.home.model.BoundingBox;
 import com.home.model.Letter;
 import com.home.model.PositionedLetter;
 import com.home.model.LayoutConstraints;
 import org.springframework.stereotype.Component;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +67,7 @@ public class TextLayoutEngineImpl implements TextLayoutEngine {
 
         PositionedLetter positionedLetter = PositionedLetter.builder()
                 .character(charStr)
-                .boundingBox(new BoundingBox(context.x, context.y, charWidth, constraints.getLineHeight()))
+                .boundingBox(new Rectangle(context.x, context.y, charWidth, constraints.getLineHeight()))
                 .lineNumber(context.lineNum)
                 .build();
 

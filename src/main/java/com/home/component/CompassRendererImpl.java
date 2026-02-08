@@ -1,6 +1,5 @@
 package com.home.component;
 
-import com.home.model.BoundingBox;
 import com.home.model.LayoutConstraints;
 import com.home.config.RenderConfig;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,7 @@ import java.awt.geom.AffineTransform;
 public class CompassRendererImpl implements CompassRenderer {
 
     @Override
-    public void render(Graphics2D g, BoundingBox box, LayoutConstraints constraints, RenderConfig renderConfig) {
+    public void render(Graphics2D g, Rectangle box, LayoutConstraints constraints, RenderConfig renderConfig) {
 
         if (renderConfig.isDebugDrawBox())
             drawRect(g, box);
@@ -64,7 +63,7 @@ public class CompassRendererImpl implements CompassRenderer {
         g.drawLine((int) (0.4 * radius), (int) (-0.2 * radius), radius, (int) (-0.2 * radius));
     }
 
-    private void drawRect(Graphics2D g, BoundingBox box) {
+    private void drawRect(Graphics2D g, Rectangle box) {
         g.setColor(Color.lightGray);
         g.setStroke(new BasicStroke(1));
         g.drawRect(box.x, box.y, box.width, box.height);

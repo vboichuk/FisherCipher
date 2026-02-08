@@ -29,10 +29,9 @@ public class LetterRendererImpl implements LetterRenderer {
         g.setTransform(originalTransform);
     }
 
-    private void drawRect(Graphics2D g, BoundingBox box) {
+    private void drawRect(Graphics2D g, Rectangle box) {
         g.setColor(Color.lightGray);
         g.setStroke(new BasicStroke(1));
-
         g.drawRect(box.x, box.y, box.width, box.height);
     }
 

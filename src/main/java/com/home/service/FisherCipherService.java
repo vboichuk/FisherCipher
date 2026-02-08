@@ -41,7 +41,7 @@ public class FisherCipherService {
             positionedLetters.forEach(pl ->
                     renderLetter(g2d, pl, letterMap.get(pl.getCharacter()), renderConfig));
 
-            Optional<BoundingBox> box = constraints.getCompassPosition(positionedLetters);
+            Optional<Rectangle> box = constraints.getCompassPosition(positionedLetters);
             box.ifPresent(b -> compassRenderer.render(g2d, b, constraints, renderConfig));
         } finally {
             g2d.dispose();

@@ -43,7 +43,7 @@ public class LayoutConstraints {
         return !positionedLetters.isEmpty() && keyDirection != Direction.NONE;
     }
 
-    public Optional<BoundingBox> getCompassPosition(List<PositionedLetter> positionedLetters) {
+    public Optional<Rectangle> getCompassPosition(List<PositionedLetter> positionedLetters) {
         if (!isShouldRenderCompass(positionedLetters))
             return Optional.empty();
 
@@ -53,7 +53,7 @@ public class LayoutConstraints {
                 imageWidth - marginX - compassWidth,
                 (int) (marginY + textLines * lineHeight * (leading))
         );
-        BoundingBox boundingBox = new BoundingBox(
+        Rectangle boundingBox = new Rectangle(
                 position.x,
                 position.y,
                 compassWidth,
