@@ -16,7 +16,8 @@ public class LayoutConstraintsBuilder {
 
     public LayoutConstraints build(RequestDto dto) {
 
-        int letterSpacing = (int) (properties.letterSpacingFactor() * properties.lineHeight());
+        int lineHeight = Optional.ofNullable(dto.getLineHeight()).orElse(properties.lineHeight());
+        int letterSpacing = (int) (properties.letterSpacingFactor() * lineHeight);
 
         return LayoutConstraints.builder()
                 .imageWidth(Optional.ofNullable(dto.getWidth()).orElse(properties.imageWidth()))
@@ -24,9 +25,9 @@ public class LayoutConstraintsBuilder {
                 .marginY(properties.marginY())
                 .letterSpacing(letterSpacing)
                 .leading(properties.leading())
-                .lineHeight(Optional.ofNullable(dto.getLineHeight()).orElse(properties.lineHeight()))
+                .lineHeight(lineHeight)
                 .keyDirection(dto.getKey())
-                .compassWidth(2 * properties.lineHeight() + properties.compassSpacing())
+                .compassWidth(2 * lineHeight + properties.compassSpacing())
                 .build();
     }
 }
